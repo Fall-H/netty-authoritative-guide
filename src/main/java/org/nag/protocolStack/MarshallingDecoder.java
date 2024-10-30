@@ -9,10 +9,10 @@ import org.jboss.marshalling.Unmarshaller;
 import java.io.IOException;
 
 public class MarshallingDecoder {
-    private final Unmarshaller umarshaller;
+    private final Unmarshaller unmarshaller;
 
-    public MarshallingDecoder(Unmarshaller umarshaller) {
-        this.umarshaller = umarshaller;
+    public MarshallingDecoder() throws IOException {
+        unmarshaller = MarshallingCodecFactory.buildUnMarshalling();
     }
 
     protected Object decode(ByteBuf in) throws Exception {
@@ -20,13 +20,13 @@ public class MarshallingDecoder {
         ByteBuf buf = in.slice(in.readerIndex(), objectSize);
         ByteInput input = new ChannelBufferByteInput(buf);
         try {
-            umarshaller.start(input);
-            Object obj = umarshaller.readObject();
-            umarshaller.finish();
+            unmarshaller.start(input);
+            Object obj = unmarshaller.readObject();
+            unmarshaller.finish();
             in.readerIndex(in.readerIndex() + objectSize);
             return obj;
         } finally {
-            umarshaller.close();
+            unmarshaller.close();
         }
     }
 }
